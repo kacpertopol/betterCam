@@ -1,0 +1,50 @@
+[perspectiveMatrix]
+
+# buffer size for perspective matrix
+#
+# the perspective transformation
+# (the transformation that stretches
+# the four ARUCO markers to the 
+# corners of the window)
+# will be calculated as the average
+# of buffer perspective matrices
+
+buffer = 20
+
+[levels1]
+
+# level for denoising with color
+#
+# eg. 0.8 means that signals above 0.8 * standard deviation
+# will be included in the denoised image
+
+l_col = 1.0
+
+[fragment]
+
+# box kernel size
+#
+# this is used in denoising to calculate mean
+# values
+
+k_pix = 300
+
+[smooth]
+
+# number of frames to buffer when smoothing image
+#
+# eg. 16 means that the current image will be calculated
+# as a moving average of 16 previous images
+
+f_buff = 16
+
+[webcam]
+
+number = 0
+aspectratio = 1920x1080
+
+[externalcam]
+
+number = 2
+aspectratio = 1920x1080
+
