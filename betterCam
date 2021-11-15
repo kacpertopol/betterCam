@@ -106,10 +106,10 @@ def applyDenoise(warped , aux):
     gray = 255 - gray
     gray = gray.astype("float32")
 
-    #gray[0:3 , :] = 0.0
-    #gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
-    #gray[: , 0:3] = 0.0
-    #gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
+    gray[0:3 , :] = 0.0
+    gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
+    gray[: , 0:3] = 0.0
+    gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
 
     blured_gray = cv2.filter2D(gray , -1 , aux.blur_kernel)
     
@@ -126,29 +126,52 @@ def applyDenoise(warped , aux):
 
 def applyContours(warped , aux):
 
-    #hls = cv2.cvtColor(warped , cv2.COLOR_BGR2HLS)
+    hls = cv2.cvtColor(warped , cv2.COLOR_BGR2HLS)
 
     gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
     gray = 255 - gray
     gray = gray.astype("float32")
 
-    #gray[0:3 , :] = 0.0
-    #gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
-    #gray[: , 0:3] = 0.0
-    #gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
+    gray[0:3 , :] = 0.0
+    gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
+    gray[: , 0:3] = 0.0
+    gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
 
     blured_gray = cv2.filter2D(gray , -1 , aux.blur_kernel)
     
-    stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray)).flatten()))
+    stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray))))
 
     l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , aux.white , aux.black)
 
     contours, hierarchy = cv2.findContours(l_res, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 
-    wh = 255 * aux.ones 
-    cv2.drawContours(wh, contours, -1, (0,0,0), -1)
+    # TODO fix hierarchy
 
-    #print(len(contours))
+    h_res = hls[: , : , 0]
+    l_res = hls[: , : , 1]
+    s_res = hls[: , : , 2]
+
+    h_new = 0 * aux.ones
+    l_new = 255 * aux.ones
+    s_new = 0 * aux.ones
+
+    for icr in range(len(contours)):
+        cr = contours[icr]
+        hr = hierarchy[0 , icr , 3]
+        #direction = -1 if hr == -1 else 1
+        # TODO direction
+        direction = -1 
+        mask = 0.0 * aux.ones
+        cv2.drawContours(mask , [cr] , -1 , 1.0 , direction)
+        mask_volume = numpy.sum(mask.flatten())
+        h_avg = numpy.sum((mask * h_res)) / mask_volume
+        l_avg = numpy.sum((mask * l_res)) / mask_volume
+        s_avg = numpy.sum((mask * s_res)) / mask_volume
+        cv2.drawContours(h_new , [cr] , -1 , int(h_avg) , -1)
+        cv2.drawContours(l_new , [cr] , -1 , int(l_avg) , -1)
+        cv2.drawContours(s_new , [cr] , -1 , int(s_avg) , -1)
+
+    wh = cv2.cvtColor(cv2.merge((h_new , l_new , s_new)) , cv2.COLOR_HLS2BGR)
 
     return (wh , aux)
 
@@ -270,13 +293,13 @@ if(__name__ == "__main__"):
             elif(key == ord('d')):
                 tools = [getFrameAvg , getMarkers , applyDenoise]
             elif(key == ord('c')):
-                tools = [getFrameAvg , getMarkers , applyContours , invertColors]
+                tools = [getFrameAvg , getMarkers , applyContours]
             elif(key == ord('o')):
                 tools = [getFrame , getMarkers , applyDenoise , invertColors]
             elif(key == ord('f')):
                 tools = [getFrame , getMarkers , applyDenoise]
             elif(key == ord('v')):
-                tools = [getFrame , getMarkers , applyContours , invertColors]
+                tools = [getFrame , getMarkers , applyContours]
             elif(key == ord('p')):
                 pauseAll = not pauseAll
             elif(key == ord('+')):
