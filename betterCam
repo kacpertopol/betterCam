@@ -25,10 +25,14 @@ class camData:
         else:
             return None
 
-    def __init__(self , cam = None):
+    def __init__(self , cam = None , sve = None):
 
         # script directory
         self.script_path = os.path.dirname(os.path.realpath(__file__))
+
+        self.save_dir = self.script_path
+        if(not sve is None):
+            self.save_dir = sve
 
         # reading configuration file 
         self.config = configparser.ConfigParser()
@@ -124,56 +128,51 @@ def applyDenoise(warped , aux):
     
     return (warped , aux)
 
-def applyContours(warped , aux):
-
-    hls = cv2.cvtColor(warped , cv2.COLOR_BGR2HLS)
-
-    gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
-    gray = 255 - gray
-    gray = gray.astype("float32")
-
-    gray[0:3 , :] = 0.0
-    gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
-    gray[: , 0:3] = 0.0
-    gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
-
-    blured_gray = cv2.filter2D(gray , -1 , aux.blur_kernel)
-    
-    stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray))))
-
-    l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , aux.white , aux.black)
-
-    contours, hierarchy = cv2.findContours(l_res, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-
-    # TODO fix hierarchy
-
-    h_res = hls[: , : , 0]
-    l_res = hls[: , : , 1]
-    s_res = hls[: , : , 2]
-
-    h_new = 0 * aux.ones
-    l_new = 255 * aux.ones
-    s_new = 0 * aux.ones
-
-    for icr in range(len(contours)):
-        cr = contours[icr]
-        hr = hierarchy[0 , icr , 3]
-        #direction = -1 if hr == -1 else 1
-        # TODO direction
-        direction = -1 
-        mask = 0.0 * aux.ones
-        cv2.drawContours(mask , [cr] , -1 , 1.0 , direction)
-        mask_volume = numpy.sum(mask.flatten())
-        h_avg = numpy.sum((mask * h_res)) / mask_volume
-        l_avg = numpy.sum((mask * l_res)) / mask_volume
-        s_avg = numpy.sum((mask * s_res)) / mask_volume
-        cv2.drawContours(h_new , [cr] , -1 , int(h_avg) , -1)
-        cv2.drawContours(l_new , [cr] , -1 , int(l_avg) , -1)
-        cv2.drawContours(s_new , [cr] , -1 , int(s_avg) , -1)
-
-    wh = cv2.cvtColor(cv2.merge((h_new , l_new , s_new)) , cv2.COLOR_HLS2BGR)
-
-    return (wh , aux)
+#def applyContours(warped , aux):
+#
+#    hls = cv2.cvtColor(warped , cv2.COLOR_BGR2HLS)
+#
+#    gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
+#    gray = 255 - gray
+#    gray = gray.astype("float32")
+#
+#    gray[0:3 , :] = 0.0
+#    gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
+#    gray[: , 0:3] = 0.0
+#    gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
+#
+#    blured_gray = cv2.filter2D(gray , -1 , aux.blur_kernel)
+#    
+#    stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray))))
+#
+#    l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , aux.white , aux.black)
+#
+#    contours, hierar = cv2.findContours(l_res, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+#
+#    # TODO fix hierarchy
+#
+#    h_res = hls[: , : , 0]
+#    l_res = hls[: , : , 1]
+#    s_res = hls[: , : , 2]
+#
+#    h_new = 0 * aux.ones
+#    l_new = 255 * aux.ones
+#    s_new = 0 * aux.ones
+#
+#    for icr in range(len(contours)):
+#        mask = 0.0 * aux.ones
+#        cv2.drawContours(mask , contours , icr , 1.0 , -1 , hierarchy = hierar , maxLevel = 0)
+#        mask_volume = numpy.sum(mask.flatten())
+#        h_avg = numpy.sum((mask * h_res)) / mask_volume
+#        l_avg = numpy.sum((mask * l_res)) / mask_volume
+#        s_avg = numpy.sum((mask * s_res)) / mask_volume
+#        cv2.drawContours(h_new , contours , icr , int(h_avg) , -1 , hierarchy = hierar , maxLevel = 0)
+#        cv2.drawContours(l_new , contours , icr , int(l_avg) , -1 , hierarchy = hierar , maxLevel = 0)
+#        cv2.drawContours(s_new , contours , icr , int(s_avg) , -1 , hierarchy = hierar , maxLevel = 0)
+#
+#    wh = cv2.cvtColor(cv2.merge((h_new , l_new , s_new)) , cv2.COLOR_HLS2BGR)
+#
+#    return (wh , aux)
 
 def getFrame(frame , aux):
     fr = aux.get()
@@ -258,15 +257,22 @@ if(__name__ == "__main__"):
 
     Keyboard shortcuts:
 
-    q - quit
-    r - pop tool from stack
-    w - push ARUCO marker warping to the tool stack
-    i - invert colors
+    q - quit;
+    s - save frame to png file;
+    p - pause image;
+    w - display camera picture directly;
+    i - using averaged camera frames, zoom to the inside of ARUCO markers, denoise and invert colors;
+    d - using averaged camera frames, zoom to the inside of ARUCO markers, denoise;
+    o - using regular camera frames, zoom to the inside of ARUCO markers, denoise and invert colors;
+    f - using regular camera frames, zoom to the inside of ARUCO markers, denoise; 
+    + - increase threshold for denoising;
+    - - decrease threshold for denoising;
 """)
     parser.add_argument("--camera" , "-c" , help = "Camera to use. Each camera name should be a section in the config file with an associated number and aspectratio.")
+    parser.add_argument("--save" , "-s" , help = "Path to directory for saving frames.")
     args = parser.parse_args() 
    
-    mainAux = camData(cam = args.camera)
+    mainAux = camData(cam = args.camera , sve = args.save)
     tools = [getFrame]
     frame = None
     pauseAll = False
@@ -286,20 +292,27 @@ if(__name__ == "__main__"):
             key = cv2.waitKey(1)
             if(key == ord('q')):
                 break
+            elif(key == ord('s')):
+                maxPng = 0
+                for f in os.listdir(mainAux.save_dir):
+                    if(f[-4:] == ".png" and f[:-4].isdigit() and len(f) == 8):
+                        if(int(f[:-4]) > maxPng):
+                            maxPng = int(f[:-4])
+                cv2.imwrite(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".png") , frame)
             elif(key == ord('w')):
                 tools = [getFrame]
             elif(key == ord('i')):
                 tools = [getFrameAvg , getMarkers , applyDenoise , invertColors]
             elif(key == ord('d')):
                 tools = [getFrameAvg , getMarkers , applyDenoise]
-            elif(key == ord('c')):
-                tools = [getFrameAvg , getMarkers , applyContours]
+#            elif(key == ord('c')):
+#                tools = [getFrameAvg , getMarkers , applyContours]
             elif(key == ord('o')):
                 tools = [getFrame , getMarkers , applyDenoise , invertColors]
             elif(key == ord('f')):
                 tools = [getFrame , getMarkers , applyDenoise]
-            elif(key == ord('v')):
-                tools = [getFrame , getMarkers , applyContours]
+#            elif(key == ord('v')):
+#                tools = [getFrame , getMarkers , applyContours]
             elif(key == ord('p')):
                 pauseAll = not pauseAll
             elif(key == ord('+')):
