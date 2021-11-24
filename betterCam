@@ -305,10 +305,14 @@ if(__name__ == "__main__"):
                 tools = [getFrameAvg , getMarkers , applyDenoise , invertColors]
             elif(key == ord('d')):
                 tools = [getFrameAvg , getMarkers , applyDenoise]
+            elif(key == ord('r')):
+                tools = [getFrameAvg , getMarkers]
 #            elif(key == ord('c')):
 #                tools = [getFrameAvg , getMarkers , applyContours]
             elif(key == ord('o')):
                 tools = [getFrame , getMarkers , applyDenoise , invertColors]
+            elif(key == ord('t')):
+                tools = [getFrame , getMarkers]
             elif(key == ord('f')):
                 tools = [getFrame , getMarkers , applyDenoise]
 #            elif(key == ord('v')):

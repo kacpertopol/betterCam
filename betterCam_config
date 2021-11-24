@@ -7,7 +7,7 @@
 # the four ARUCO markers to the 
 # corners of the window)
 # will be calculated as the average
-# of buffer perspective matrices
+# of buffered perspective matrices.
 
 buffer = 20
 
@@ -24,8 +24,9 @@ l_col = 1.0
 
 # box kernel size
 #
-# this is used in denoising to calculate mean
-# values
+# this is used in denoising. Average values will be 
+# calculated in a k_pix x k_pix square around each
+# pixel in the image.
 
 k_pix = 300
 
@@ -38,9 +39,15 @@ k_pix = 300
 
 f_buff = 16
 
+# Other section titles are the camera names and contain
+# configuration specific to a camera.
 [webcam]
 
+# Web cam number. Carefull, this number might change if you plug the
+# camera into another port.
 number = 0
+
+# Aspect ratio of camera.
 aspectratio = 1920x1080
 
 [externalcam]
