@@ -14,6 +14,15 @@ class camData:
     def get(self):
         ret, frame = self.cap.read()
         if(ret):
+            if((not self.matrix is None) and (not self.distortion is None)):
+                # sauce: https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
+                h,  w = frame.shape[:2]
+                newcameramtx, roi = cv2.getOptimalNewCameraMatrix(self.matrix, self.distortion, (w,h), 1, (w,h))
+                frame = cv2.undistort(frame, self.matrix, self.distortion, None, newcameramtx)
+                # left this part out to preserve the aspect ratio
+                #x, y, w, h = roi
+                #frame = frame[y:y+h, x:x+w]
+            #print(frame.shape)
             if(self.res[1] != frame.shape[0] or self.res[0] != frame.shape[1]):
                 self.res[1] = frame.shape[0]
                 self.res[0] = frame.shape[1]
@@ -44,11 +53,19 @@ class camData:
         self.f_buff = int(self.config["smooth"]["f_buff"])
         self.l_col = float(self.config["levels1"]["l_col"])
 
+        # for undistorting
+        self.matrix = None
+        self.distortion = None
+
         # getting camera
         if(cam == None):
             self.camera = 0
         else:
             self.camera = int(self.config[cam]["number"])
+            if("matrix" in self.config[cam]):
+                self.matrix = numpy.array(list(map(lambda x : float(x) , self.config[cam]["matrix"].split()))).reshape((3 , 3))
+            if("distortion" in self.config[cam]):
+                self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
 
         self.cap = cv2.VideoCapture(self.camera)
 
