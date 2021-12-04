@@ -282,6 +282,10 @@ if(__name__ == "__main__"):
     d - using averaged camera frames, zoom to the inside of ARUCO markers, denoise;
     o - using regular camera frames, zoom to the inside of ARUCO markers, denoise and invert colors;
     f - using regular camera frames, zoom to the inside of ARUCO markers, denoise; 
+    r - using averaged frames, zoom to the inside of ARUCO markers;
+    t - using regular frames, zoom to the inside of ARUCO markers; 
+    y - using averaged frames, zoom to the inside of ARUCO markers, invert colors;
+    u - using regular frames, zoom to the inside of ARUCO markers, invert colors; 
     + - increase threshold for denoising;
     - - decrease threshold for denoising;
 """)
@@ -324,12 +328,16 @@ if(__name__ == "__main__"):
                 tools = [getFrameAvg , getMarkers , applyDenoise]
             elif(key == ord('r')):
                 tools = [getFrameAvg , getMarkers]
+            elif(key == ord('y')):
+                tools = [getFrameAvg , getMarkers , invertColors]
 #            elif(key == ord('c')):
 #                tools = [getFrameAvg , getMarkers , applyContours]
             elif(key == ord('o')):
                 tools = [getFrame , getMarkers , applyDenoise , invertColors]
             elif(key == ord('t')):
                 tools = [getFrame , getMarkers]
+            elif(key == ord('u')):
+                tools = [getFrame , getMarkers , invertColors]
             elif(key == ord('f')):
                 tools = [getFrame , getMarkers , applyDenoise]
 #            elif(key == ord('v')):
