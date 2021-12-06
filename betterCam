@@ -278,9 +278,9 @@ def getMarkers(frame , aux):
 if(__name__ == "__main__"):
 
     #PYINSTALLER_VERSION## sauce https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error-could-not-load-qt-platform-plugin-xcb-even-though-it-was-found/26
-    #PYINSTALLER_VERSION#for k, v in os.environ.items():
-        #PYINSTALLER_VERSION#if k.startswith("QT_") and "cv2" in v:
-            #PYINSTALLER_VERSION#del os.environ[k]
+    #PYINSTALLER_VERSION##for k, v in os.environ.items():
+        #PYINSTALLER_VERSION##if k.startswith("QT_") and "cv2" in v:
+            #PYINSTALLER_VERSION##del os.environ[k]
 
     # parsing command line arguments 
     parser = argparse.ArgumentParser(description = """
