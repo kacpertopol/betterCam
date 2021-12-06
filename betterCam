@@ -441,7 +441,7 @@ if(__name__ == "__main__"):
                 pauseAll = not pauseAll
             elif(key == ord('n')):
                 # operations performed once:
-                nxt = mainAux.nextCam() # get next camera
+                nxt = mainAux.nextCam() 
                 mainAux.cap.release() 
                 cv2.destroyAllWindows()
                 mainAux = camData(cam = nxt , sve = args.save)
