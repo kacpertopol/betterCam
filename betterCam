@@ -329,6 +329,7 @@ if(__name__ == "__main__"):
                 cv2.imwrite(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".png") , frame)
             elif(key == ord('w')):
                 # operations performed once:
+                mainAux.m_avg = None
                 mainAux.m_list = []
                 # operations performed in each loop:
                 tools = [getFrame]
