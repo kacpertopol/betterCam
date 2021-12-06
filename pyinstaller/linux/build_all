@@ -1,0 +1,8 @@
+#!/bin/bash
+
+cat ../../betterCam | sed '/#REGULAR_VERSION#/d' | sed 's/#PYINSTALLER_VERSION#//g' > ./betterCam
+chmod +x ./betterCam
+
+pyinstaller --onefile ./betterCam
+
+cp ../../betterCam_config ./dist/

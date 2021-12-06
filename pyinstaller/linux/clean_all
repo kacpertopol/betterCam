@@ -1,0 +1,5 @@
+#!/bin/bash
+rm betterCam
+rm -r ./build
+rm -r ./dist/
+rm betterCam.spec
