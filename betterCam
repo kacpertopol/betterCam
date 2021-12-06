@@ -82,11 +82,11 @@ class camData:
         self.m_avg = None
 
         if(cam == None):
-            self.res = [1920 , 1080]
+            self.res = [int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))]
         else:
             self.res = list(map(lambda x : int(x) , self.config[cam]["aspectratio"].split("x")))
-        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
-        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
 
         # window for cv
         if(cam == None):
@@ -207,6 +207,49 @@ def getFrame(frame , aux):
     else:
         return None
 
+def getFrameHelp(frame , aux):
+    fr = aux.get()
+    if(not fr is None):
+        text = """KEYBOARD SHORTCUTS
+ h: print help information
+ q: quit
+ w: display camera picture directly
+ s: save frame to png file
+ p: pause image
+ i: using averaged camera frames, zoom to the inside of ARUCO markers, 
+    denoise and invert colors
+ d: using averaged camera frames, zoom to the inside of ARUCO markers, 
+    denoise
+ o: using regular camera frames, zoom to the inside of ARUCO markers, 
+    denoise and invert colors
+ f: using regular camera frames, zoom to the inside of ARUCO markers, 
+    denoise 
+ r: using averaged frames, zoom to the inside of ARUCO markers
+ t: using regular frames, zoom to the inside of ARUCO markers 
+ y: using averaged frames, zoom to the inside of ARUCO markers, invert colors
+ u: using regular frames, zoom to the inside of ARUCO markers, invert colors 
+ +: increase threshold for denoising
+ -: decrease threshold for denoising
+CONFIGURATION
+ betterCam_config: edit this file to change configuration"""
+        text = text.split('\n')
+        ycoord = 20
+        for line in text:
+            cv2.putText(\
+                    fr , \
+                    line , \
+                    (20 , ycoord) , \
+                    fontFace = cv2.FONT_HERSHEY_DUPLEX , \
+                    fontScale = 0.4 , \
+                    color = (0 , 0 , 0) , \
+                    thickness = 1 , \
+                    lineType = cv2.LINE_AA , \
+                    )
+            ycoord += 20
+        return (fr , aux)
+    else:
+        return None
+
 def getFrameAvg(frame , aux):
     warped = aux.get()
     if(not warped is None):
@@ -288,6 +331,7 @@ if(__name__ == "__main__"):
 
     Keyboard shortcuts:
 
+    h - print help information;
     q - quit;
     s - save frame to png file;
     p - pause image;
@@ -308,7 +352,7 @@ if(__name__ == "__main__"):
     args = parser.parse_args() 
    
     mainAux = camData(cam = args.camera , sve = args.save)
-    tools = [getFrame]
+    tools = [getFrameHelp]
     frame = None
     pauseAll = False
 
@@ -340,6 +384,12 @@ if(__name__ == "__main__"):
                 mainAux.m_list = []
                 # operations performed in each loop:
                 tools = [getFrame]
+            elif(key == ord('h')):
+                # operations performed once:
+                mainAux.m_avg = None
+                mainAux.m_list = []
+                # operations performed in each loop:
+                tools = [getFrameHelp]
             elif(key == ord('i')):
                 # operations performed in each loop:
                 tools = [getFrameAvg , getMarkers , applyDenoise , invertColors]
