@@ -1,3 +1,3 @@
 # help info
 
-- add nicer graphic
+- (done) add nicer graphic
