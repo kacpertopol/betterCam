@@ -260,6 +260,9 @@ def getFrameAvg(frame , aux):
     else:
         return None
 
+def doNothing(warped , aux):
+    return (warped , aux)
+
 def invertColors(frame , aux):
     warped = 255 - frame
     return (warped , aux)
@@ -344,6 +347,7 @@ if(__name__ == "__main__"):
    
     mainAux = camData(cam = args.camera , sve = args.save)
     tools = [getFrameHelp]
+    storedFrame = None
     frame = None
     pauseAll = False
 
@@ -408,6 +412,15 @@ if(__name__ == "__main__"):
             elif(key == ord('p')):
                 # operations performed once:
                 pauseAll = not pauseAll
+            elif(key == ord('9')):
+                # operations performed once:
+                storedFrame = frame
+            elif(key == ord('0')):
+                if(not storedFrame is None):
+                    # operations performed once:
+                    frame = storedFrame
+                    # operations performed in each loop:
+                    tools = [doNothing]
             elif(key == ord('n')):
                 # operations performed once:
                 nxt = mainAux.nextCam() 
