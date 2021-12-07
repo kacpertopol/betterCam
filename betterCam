@@ -414,6 +414,10 @@ if(__name__ == "__main__"):
                 mainAux.cap.release() 
                 cv2.destroyAllWindows()
                 mainAux = camData(cam = nxt , sve = args.save)
+                if((mainAux.cap is None) or (not mainAux.cap.isOpened())):
+                    mainAux.cap.release() 
+                    cv2.destroyAllWindows()
+                    mainAux = camData(cam = args.camera , sve = args.save)
             elif(key == ord('+')):
                 # operations performed once:
                 mainAux.l_col += 0.1

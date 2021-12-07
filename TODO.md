@@ -1,3 +1,2 @@
-# help info
-
+- cycling through cameras in betterCam_config, skipping unavailable cameras
 - (done) add nicer graphic
