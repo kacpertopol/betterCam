@@ -1,4 +1,4 @@
 #!/bin/bash
 
-cat betterCam.py | sed '/#REGULAR_VERSION#/d' | sed 's/#PYINSTALLER_VERSION#//g' > ./betterCam
-chmod +x ./betterCam
+cat betterCam | sed '/#REGULAR_VERSION#/d' | sed 's/#PYINSTALLER_VERSION#//g' > ./BETTERCAM
+chmod +x ./BETTERCAM
