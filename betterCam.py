@@ -42,7 +42,8 @@ class camData:
     def __init__(self , cam = None , sve = None):
 
         # script directory
-        self.script_path = os.path.dirname(os.path.realpath(sys.executable)) 
+        self.script_path = os.path.dirname(os.path.realpath(__file__)) #REGULAR_VERSION#
+        #PYINSTALLER_VERSION#self.script_path = os.path.dirname(os.path.realpath(sys.executable)) 
 
         self.infoImage = cv2.imread(os.path.join(self.script_path , "info.png"))
 
@@ -310,10 +311,10 @@ def getMarkers(frame , aux):
 
 if(__name__ == "__main__"):
 
-    # sauce https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error-could-not-load-qt-platform-plugin-xcb-even-though-it-was-found/26
-    #for k, v in os.environ.items():
-        #if k.startswith("QT_") and "cv2" in v:
-            #del os.environ[k]
+    #PYINSTALLER_VERSION## sauce https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error-could-not-load-qt-platform-plugin-xcb-even-though-it-was-found/26
+    #PYINSTALLER_VERSION##for k, v in os.environ.items():
+        #PYINSTALLER_VERSION##if k.startswith("QT_") and "cv2" in v:
+            #PYINSTALLER_VERSION##del os.environ[k]
 
     # parsing command line arguments 
     parser = argparse.ArgumentParser(description = """
