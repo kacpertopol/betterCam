@@ -36,11 +36,8 @@ class camData:
             return None
 
     def nextCam(self):
-        if(self.current_cam == []):
-            return None
-        else:
-            self.current_cam = (self.current_cam + 1) % len(self.cameras)
-            return self.cameras[self.current_cam]
+        self.current_cam = (self.current_cam + 1) % len(self.cameras)
+        return self.cameras[self.current_cam]
 
     def __init__(self , cam = None , sve = None):
 

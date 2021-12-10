@@ -1,5 +1,0 @@
-#!/bin/bash
-cp betterCam ./src/betterCam/betterCam.py
-cp betterCam_config ./src/betterCam/betterCam_config
-cp info.png ./src/betterCam/info.png
-pipreqs --mode gt --force ./src/betterCam/
