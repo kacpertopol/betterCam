@@ -310,7 +310,10 @@ def getMarkers(frame , aux):
         return (warped , aux)
 
 if(__name__ == "__main__"):
-
+    #PYINSTALLER_VERSION#import PySide2
+    #PYINSTALLER_VERSION#dirname = os.path.dirname(PySide2.__file__)
+    #PYINSTALLER_VERSION#plugin_path = os.path.join(dirname, 'plugins', 'platforms')
+    #PYINSTALLER_VERSION#os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
     #PYINSTALLER_VERSION## sauce https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error-could-not-load-qt-platform-plugin-xcb-even-though-it-was-found/26
     #PYINSTALLER_VERSION##for k, v in os.environ.items():
         #PYINSTALLER_VERSION##if k.startswith("QT_") and "cv2" in v:
