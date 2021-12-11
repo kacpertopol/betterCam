@@ -36,9 +36,42 @@ class camData:
             return None
 
     def nextCam(self):
-        self.current_cam = (self.current_cam + 1) % len(self.cameras)
-        return self.cameras[self.current_cam]
+        self.current_cam = (self.current_cam + 1) % (len(self.cameras) + 1)
 
+        cam = None
+        if(self.current_cam < len(self.cameras)):
+            cam = self.cameras[self.current_cam]
+
+        # for undistorting
+        self.matrix = None
+        self.distortion = None
+        
+        # getting camera
+        if(cam == None):
+            self.camera = 0
+        else:
+            self.camera = int(self.config[cam]["number"])
+            if("matrix" in self.config[cam]):
+                self.matrix = numpy.array(list(map(lambda x : float(x) , self.config[cam]["matrix"].split()))).reshape((3 , 3))
+            if("distortion" in self.config[cam]):
+                self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
+
+        self.crop = False
+
+        if(not cam is None):
+            if("crop" in self.config[cam]):
+                self.crop = self.config[cam]["crop"].strip().lower() == "true"
+
+        self.cap.release()
+        self.cap = cv2.VideoCapture(self.camera)
+
+        if(cam == None):
+            self.res = [int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))]
+        else:
+            self.res = list(map(lambda x : int(x) , self.config[cam]["aspectratio"].split("x")))
+            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
+            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
+    
     def __init__(self , cam = None , sve = None):
 
         # script directory
@@ -97,10 +130,6 @@ class camData:
 
         self.cap = cv2.VideoCapture(self.camera)
 
-        # perspective matrix
-
-        self.m_avg = None
-
         if(cam == None):
             self.res = [int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))]
         else:
@@ -108,6 +137,10 @@ class camData:
             self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
             self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
 
+        # perspective matrix
+
+        self.m_avg = None
+        
         # window for cv
         if(cam == None):
             self.name = "frame"
@@ -222,18 +255,37 @@ def applyDenoise(warped , aux):
 
 def getFrame(frame , aux):
     fr = aux.get()
-    if(not fr is None):
-        return (fr , aux)
-    else:
-        return None
+
+    if(fr is None):
+        return (frame , aux)
+    
+    return (fr , aux)
 
 def getFrameHelp(frame , aux):
     fr = aux.get()
+
+    if(fr is None):
+        return (frame , aux)
+
     if(not fr is None):
         #if(fr.shape[0] > 400 and fr.shape[1] > 400):
         x_of = int((fr.shape[0] - 400) / 2)
         y_of = int((fr.shape[1] - 400) / 2)
         fr[x_of : x_of + 400 , y_of : y_of + 400 , :] = aux.infoImage[: , : , :]
+        cv2.putText(fr , 
+                "To configure change 'betterCam_config' in:" , 
+                (20 , fr.shape[0] - 25) , 
+                fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL ,
+                fontScale = 0.6,
+                color = (125 , 125 , 125),
+                thickness = 1)
+        cv2.putText(fr , 
+                "'" + aux.script_path + "'." , 
+                (20 , fr.shape[0] - 10) , 
+                fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL ,
+                fontScale = 0.6,
+                color = (125 , 125 , 125),
+                thickness = 1)
         return (fr , aux)
     else:
         return None
@@ -309,17 +361,7 @@ def getMarkers(frame , aux):
         warped = cv2.warpPerspective(frame , aux.m_avg , (frame.shape[1] , frame.shape[0]))
         return (warped , aux)
 
-if(__name__ == "__main__"):
-    #PYINSTALLER_VERSION#import PySide2
-    #PYINSTALLER_VERSION#dirname = os.path.dirname(PySide2.__file__)
-    #PYINSTALLER_VERSION#plugin_path = os.path.join(dirname, 'plugins', 'platforms')
-    #PYINSTALLER_VERSION#os.environ['QT_QPA_PLATFORM_PLUGIN_PATH'] = plugin_path
-    #PYINSTALLER_VERSION## sauce https://forum.qt.io/topic/119109/using-pyqt5-with-opencv-python-cv2-causes-error-could-not-load-qt-platform-plugin-xcb-even-though-it-was-found/26
-    #PYINSTALLER_VERSION##for k, v in os.environ.items():
-        #PYINSTALLER_VERSION##if k.startswith("QT_") and "cv2" in v:
-            #PYINSTALLER_VERSION##del os.environ[k]
-
-    # parsing command line arguments 
+def main(args):
     parser = argparse.ArgumentParser(description = """
     Use web cam as blackboard.
 
@@ -343,7 +385,7 @@ if(__name__ == "__main__"):
 """)
     parser.add_argument("--camera" , "-c" , help = "Camera to use. Each camera name should be a section in the config file with an associated number and aspectratio.")
     parser.add_argument("--save" , "-s" , help = "Path to directory for saving frames.")
-    args = parser.parse_args() 
+    args = parser.parse_args(args) 
    
     mainAux = camData(cam = args.camera , sve = args.save)
     tools = [getFrameHelp]
@@ -361,7 +403,8 @@ if(__name__ == "__main__"):
                 for t in tools:
                     frame , mainAux = t(frame , mainAux)
 
-                    mainAux.show(frame)
+                    if(frame is not None):
+                        mainAux.show(frame)
 
             key = cv2.waitKey(1)
             if(key == ord('q')):
@@ -423,14 +466,15 @@ if(__name__ == "__main__"):
                     tools = [doNothing]
             elif(key == ord('n')):
                 # operations performed once:
-                nxt = mainAux.nextCam() 
-                mainAux.cap.release() 
-                cv2.destroyAllWindows()
-                mainAux = camData(cam = nxt , sve = args.save)
-                if((mainAux.cap is None) or (not mainAux.cap.isOpened())):
-                    mainAux.cap.release() 
-                    cv2.destroyAllWindows()
-                    mainAux = camData(cam = args.camera , sve = args.save)
+                mainAux.nextCam() 
+                #nxt = mainAux.nextCam() 
+                #mainAux.cap.release() 
+                #cv2.destroyAllWindows()
+                #mainAux = camData(cam = nxt , sve = args.save)
+                #if((mainAux.cap is None) or (not mainAux.cap.isOpened())):
+                #    mainAux.cap.release() 
+                #    cv2.destroyAllWindows()
+                #    mainAux = camData(cam = args.camera , sve = args.save)
             elif(key == ord('+')):
                 # operations performed once:
                 mainAux.l_col += 0.1
