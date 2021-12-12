@@ -50,8 +50,9 @@ f_buff = 16
 # PATH TO SAVE PNG FILES WITH FRAMES
 #
 # by default this is the current directory
+# this is commented out by default using '#'
 
-save = /home/kacper/Pictures/betterCamera_frames
+#save = /home/kacper/Pictures/betterCamera_frames
 
 ##########################################################
 #                                                        #
