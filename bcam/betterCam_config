@@ -1,6 +1,12 @@
+####################
+#                  #
+# GENERAL SETTINGS #
+#                  #
+###################
+
 [perspectiveMatrix]
 
-# buffer size for perspective matrix
+# BUFFER SIZE FOR PERSPECTIVE MATRIX
 #
 # the perspective transformation
 # (the transformation that stretches
@@ -13,18 +19,18 @@ buffer = 20
 
 [levels1]
 
-# level for denoising with color
+# LEVEL FOR DENOISING WITH COLOR
 #
 # eg. 0.8 means that signals above 0.8 * standard deviation
-# will be included in the denoised image
+# will be included in the de-noised image
 
 l_col = 1.0
 
 [fragment]
 
-# box kernel size
+# BOX KERNEL SIZE
 #
-# this is used in denoising. Average values will be 
+# this is used in de-noising. Average values will be 
 # calculated in a k_pix x k_pix square around each
 # pixel in the image.
 
@@ -32,31 +38,73 @@ k_pix = 300
 
 [smooth]
 
-# number of frames to buffer when smoothing image
+# NUMBER OF FRAMES TO BUFFER WHEN SMOOTHING IMAGE
 #
 # eg. 16 means that the current image will be calculated
 # as a moving average of 16 previous images
 
 f_buff = 16
 
-# Other section titles are the camera names and contain
-# configuration specific to a camera.
-[webcam]
+[paths]
 
-# Web cam number. Carefull, this number might change if you plug the
+# PATH TO SAVE PNG FILES WITH FRAMES
+#
+# by default this is the current directory
+
+save = /home/kacper/Pictures/betterCamera_frames
+
+##########################################################
+#                                                        #
+# OTHER SECTION TITLES ARE THE CAMERA NAMES AND CONTAIN  #
+# CONFIGURATION SPECIFIC TO A CAMERA                     #
+#                                                        #
+# the settings in this part are commented out by default #
+# using '#'                                              #
+#                                                        #
+##########################################################
+
+#[webcam]
+
+# WEB CAM NUMBER
+#
+# Careful, this number might change if you plug the
 # camera into another port.
-number = 0
 
-# Aspect ratio of camera.
-aspectratio = 1920x1080
+#number = 0
 
-[externalcam]
+# CAMERA RESOLUTION
+#
+# This setting also effects the aspect ratio
+#
 
-number = 2
-aspectratio = 1920x1080
+#aspectratio = 1920x1080
 
-# Data from camera calibration, used to undistort
-matrix = 1.40992145e+03 0.00000000e+00 9.52190208e+02 0.00000000e+00 1.40229114e+03 4.65599973e+02 0.00000000e+00 0.00000000e+00 1.00000000e+00
-distortion = -0.35193475  0.08885404  0.00383328 -0.00160033  0.05370595
-# Crop undistorted image to remove empty pixels, by default False
-#crop = True
+#[externalcam]
+
+#number = 2
+#aspectratio = 1920x1080
+
+# CAMERA CALIBRATION
+#
+# This is an advanced setting. Please read:
+# https://docs.opencv.org/4.x/dc/dbb/tutorial_py_calibration.html
+# for more information.
+
+# CAMERA MATRIX
+#
+# This 3x3 matrix is flattened out and written row by row
+#
+#matrix = 1.40992145e+03 0.00000000e+00 9.52190208e+02 0.00000000e+00 1.40229114e+03 4.65599973e+02 0.00000000e+00 0.00000000e+00 1.00000000e+00
+
+# DISTORTION COEFFICIENTS
+#
+# Five distortion coefficients
+
+#distortion = -0.35193475  0.08885404  0.00383328 -0.00160033  0.05370595
+
+# CROP UN-DISTORTED IMAGE 
+#
+# Removes empty pixels, by default False.
+# The default value is recommended because it preserves the image aspect ratio.
+
+#crop = False

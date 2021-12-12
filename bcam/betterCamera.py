@@ -41,41 +41,43 @@ class camData:
             return None
 
     def nextCam(self):
-        self.current_cam = (self.current_cam + 1) % (len(self.cameras) + 1)
+        if(len(self.cameras) != 0):
 
-        cam = None
-        if(self.current_cam < len(self.cameras)):
-            cam = self.cameras[self.current_cam]
+            self.current_cam = (self.current_cam + 1) % (len(self.cameras) + 1)
 
-        # for undistorting
-        self.matrix = None
-        self.distortion = None
-        
-        # getting camera
-        if(cam == None):
-            self.camera = 0
-        else:
-            self.camera = int(self.config[cam]["number"])
-            if("matrix" in self.config[cam]):
-                self.matrix = numpy.array(list(map(lambda x : float(x) , self.config[cam]["matrix"].split()))).reshape((3 , 3))
-            if("distortion" in self.config[cam]):
-                self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
+            cam = None
+            if(self.current_cam < len(self.cameras)):
+                cam = self.cameras[self.current_cam]
 
-        self.crop = False
+            # for undistorting
+            self.matrix = None
+            self.distortion = None
+            
+            # getting camera
+            if(cam == None):
+                self.camera = 0
+            else:
+                self.camera = int(self.config[cam]["number"])
+                if("matrix" in self.config[cam]):
+                    self.matrix = numpy.array(list(map(lambda x : float(x) , self.config[cam]["matrix"].split()))).reshape((3 , 3))
+                if("distortion" in self.config[cam]):
+                    self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
 
-        if(not cam is None):
-            if("crop" in self.config[cam]):
-                self.crop = self.config[cam]["crop"].strip().lower() == "true"
+            self.crop = False
 
-        self.cap.release()
-        self.cap = cv2.VideoCapture(self.camera)
+            if(not cam is None):
+                if("crop" in self.config[cam]):
+                    self.crop = self.config[cam]["crop"].strip().lower() == "true"
 
-        if(cam == None):
-            self.res = [int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))]
-        else:
-            self.res = list(map(lambda x : int(x) , self.config[cam]["aspectratio"].split("x")))
-            self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
-            self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
+            self.cap.release()
+            self.cap = cv2.VideoCapture(self.camera)
+
+            if(cam == None):
+                self.res = [int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH)) , int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))]
+            else:
+                self.res = list(map(lambda x : int(x) , self.config[cam]["aspectratio"].split("x")))
+                self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
+                self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
     
     def __init__(self , cam = None , sve = None):
 
@@ -85,14 +87,17 @@ class camData:
 
         self.infoImage = cv2.imread(os.path.join(self.script_path , "info.png"))
 
-        self.save_dir = self.script_path
-        if(not sve is None):
-            self.save_dir = sve
-
         # reading configuration file 
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join(self.script_path , "betterCam_config"))
        
+        self.save_dir = os.getcwd()
+        if(not sve is None):
+            self.save_dir = sve
+        elif("paths" in self.config):
+            if("save" in self.config["paths"]):
+                self.save_dir = self.config["paths"]["save"]
+
         self.buff = int(self.config["perspectiveMatrix"]["buffer"])
         
         self.k_pix = int(self.config["fragment"]["k_pix"])
@@ -103,9 +108,10 @@ class camData:
         for k in self.config:
             if(\
                     k != "DEFAULT" and \
-                    k!= "perspectiveMatrix" and \
+                    k != "perspectiveMatrix" and \
                     k != "levels1" and \
-                    k!= "fragment" and \
+                    k != "fragment" and \
+                    k != "paths" and \
                     k != "smooth"):
                 self.cameras.append(k)
         self.current_cam = 0
@@ -483,14 +489,6 @@ def main(args):
             elif(key == ord('n')):
                 # operations performed once:
                 mainAux.nextCam() 
-                #nxt = mainAux.nextCam() 
-                #mainAux.cap.release() 
-                #cv2.destroyAllWindows()
-                #mainAux = camData(cam = nxt , sve = args.save)
-                #if((mainAux.cap is None) or (not mainAux.cap.isOpened())):
-                #    mainAux.cap.release() 
-                #    cv2.destroyAllWindows()
-                #    mainAux = camData(cam = args.camera , sve = args.save)
             elif(key == ord('+')):
                 # operations performed once:
                 mainAux.l_col += 0.1
