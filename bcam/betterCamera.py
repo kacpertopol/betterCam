@@ -24,7 +24,12 @@ class camData:
                     x, y, w, h = roi
                     frame = frame[y:y+h, x:x+w]
             #print(frame.shape)
-            if(self.res[1] != frame.shape[0] or self.res[0] != frame.shape[1]):
+            if(\
+                self.res[1] != frame.shape[0] or \
+                self.res[0] != frame.shape[1] or \
+                frame.shape[0] != self.white.shape[0] or \
+                frame.shape[1] != self.white.shape[1]\
+                ):
                 self.res[1] = frame.shape[0]
                 self.res[0] = frame.shape[1]
                 self.ones = numpy.ones((self.res[1] , self.res[0]) , numpy.uint8)
@@ -182,6 +187,9 @@ class camData:
 
 def applyDenoise(warped , aux):
 
+    if(warped is None):
+        return (warped , aux)
+
     hls = cv2.cvtColor(warped , cv2.COLOR_BGR2HLS)
 
     gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
@@ -292,32 +300,40 @@ def getFrameHelp(frame , aux):
 
 def getFrameAvg(frame , aux):
     warped = aux.get()
-    if(not warped is None):
-        aux.frame_buff.append(warped)
-        if(len(aux.frame_buff) > aux.f_buff):
-            aux.frame_buff.pop(0)
-       
-        smooth = numpy.zeros(warped.shape , numpy.float32)
 
-        for f in aux.frame_buff:
-            smooth = smooth + f
-
-        smooth = smooth / len(aux.frame_buff)
-        smooth = smooth.astype(warped.dtype)
-        warped = smooth
+    if(warped is None):
         return (warped , aux)
-    else:
-        return None
+
+    aux.frame_buff.append(warped)
+    if(len(aux.frame_buff) > aux.f_buff):
+        aux.frame_buff.pop(0)
+   
+    smooth = numpy.zeros(warped.shape , numpy.float32)
+
+    for f in aux.frame_buff:
+        smooth = smooth + f
+
+    smooth = smooth / len(aux.frame_buff)
+    smooth = smooth.astype(warped.dtype)
+    warped = smooth
+    return (warped , aux)
 
 def doNothing(warped , aux):
     return (warped , aux)
 
 def invertColors(frame , aux):
+
+    if(frame is None):
+        return (frame , aux)
+    
     warped = 255 - frame
     return (warped , aux)
 
 def getMarkers(frame , aux):
 
+    if(frame is None):
+        return (frame , aux)
+    
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, aux.aruco_dict, parameters=aux.parameters)
    
