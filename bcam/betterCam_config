@@ -64,26 +64,26 @@ f_buff = 16
 #                                                        #
 ##########################################################
 
-#[webcam]
+[webcam]
 
 # WEB CAM NUMBER
 #
 # Careful, this number might change if you plug the
 # camera into another port.
 
-#number = 0
+number = 0
 
 # CAMERA RESOLUTION
 #
 # This setting also effects the aspect ratio
 #
 
-#aspectratio = 1920x1080
+aspectratio = 1920x1080
 
-#[externalcam]
+[externalcam]
 
-#number = 2
-#aspectratio = 1920x1080
+number = 2
+aspectratio = 1920x1080
 
 # CAMERA CALIBRATION
 #
@@ -95,13 +95,13 @@ f_buff = 16
 #
 # This 3x3 matrix is flattened out and written row by row
 #
-#matrix = 1.40992145e+03 0.00000000e+00 9.52190208e+02 0.00000000e+00 1.40229114e+03 4.65599973e+02 0.00000000e+00 0.00000000e+00 1.00000000e+00
+matrix = 1.40992145e+03 0.00000000e+00 9.52190208e+02 0.00000000e+00 1.40229114e+03 4.65599973e+02 0.00000000e+00 0.00000000e+00 1.00000000e+00
 
 # DISTORTION COEFFICIENTS
 #
 # Five distortion coefficients
 
-#distortion = -0.35193475  0.08885404  0.00383328 -0.00160033  0.05370595
+distortion = -0.35193475  0.08885404  0.00383328 -0.00160033  0.05370595
 
 # CROP UN-DISTORTED IMAGE 
 #

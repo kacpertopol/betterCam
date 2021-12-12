@@ -78,6 +78,8 @@ class camData:
                 self.res = list(map(lambda x : int(x) , self.config[cam]["aspectratio"].split("x")))
                 self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
                 self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
+            
+            self.m_avg = None
     
     def __init__(self , cam = None , sve = None):
 
