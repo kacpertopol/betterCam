@@ -11,8 +11,8 @@ Improved version of
 
 ### pip
 
-You can install `betterCamera` using [`pip`](https://en.wikipedia.org/wiki/Pip_(package_manager)).
-More information on installing and using the `pip` python package menager 
+You can install **betterCamera** using [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)).
+More information on installing and using the **pip** python package menager 
 is available in [this informative article](https://www.makeuseof.com/tag/install-pip-for-python/).
 
 If you're on *linux* and *mac* open a terminal and run:
