@@ -63,7 +63,7 @@ buffer = 20
 to 
 ```
 buffer=10
-```.
+```
 Each configuration
 option is paired with a comment describing the setting, comments are lines starting with a `#`.
 Additionally, 
