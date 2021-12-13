@@ -3,4 +3,7 @@
 #cat betterCam | sed '/#REGULAR_VERSION#/d' | sed 's/#PYINSTALLER_VERSION#//g' > ./BETTERCAM
 #chmod +x ./BETTERCAM
 
-cp ./betterCam ./BETTERCAM/betterCam.py
+#cp ./betterCam ./BETTERCAM/betterCam.py
+
+python setup.py sdist bdist_wheel
+twine upload --repository-url https://test.pypi.org/legacy/ dist/*
