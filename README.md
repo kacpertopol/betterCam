@@ -49,8 +49,8 @@ is available by pressing `h`. To quit the program hit `q`:
 ## configuration
 
 The path to a directory containing the configuration file `betterCam_config` is 
-displayed at the bottom of the screen
-after pressing `h`. All configuration is done by modifying this file. 
+displayed at the very bottom of the window
+after pressing the `h` key. All configuration is done by modifying this file. 
 Don't be afraid to tinker with the settings, if you mess up, just replace `betterCam_config`
 with the [default configuration file](./bcam/betterCam_config).
 
