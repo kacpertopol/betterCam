@@ -12,10 +12,11 @@ Improved version of
 ### pip
 
 You can install **betterCamera** using [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)).
-More information on installing and using the **pip** python package menager 
-is available in [this informative article](https://www.makeuseof.com/tag/install-pip-for-python/).
+Information on the installation and usage of **pip**, on different operating systems, is available [here](https://pip.pypa.io/en/stable/installation/).
+and [here](https://pip.pypa.io/en/stable/) respectively.
+Many additional resources are available online, see for example [this informative article](https://www.makeuseof.com/tag/install-pip-for-python/).
 
-If you're on *linux* and *mac* open a terminal and run:
+If you're on *linux* or *mac* open a terminal and run:
 ```sh
 TODO
 ```
@@ -45,6 +46,20 @@ is available by pressing `h`. To quit the program hit `q`:
 
 ![keys](./bcam/info.png)
 
+### quitting
+
+This is important 😀 Just hit `q`.
+
+### getting help
+
+The `h` key activates the help screen:
+![betterCamera](./doc_images/0001.png)
+with a description of all the special keys.
+
+### displaying the camera picture directly
+
+Hitting `w` just displays the camera picure directly:
+![betterCamera](./doc_images/0001.png)
 
 ## configuration
 
@@ -67,6 +82,7 @@ to
 buffer=10
 ```
 Each configuration
-option is paired with a comment describing the setting, comments are lines starting with a `#`.
+option is paired with a comment describing the setting.
+Comments are lines starting with `#`.
 Additionally, 
 sections are marked using square brackets, for example `[perspectiveMatrix]`. 
