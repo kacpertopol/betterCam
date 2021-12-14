@@ -4,7 +4,7 @@ Turn web cam into a black / white board:
 
 ![betterCamera](./doc_images/all.gif)
 
-Improved version of
+This is an improved version of
 [cam_board](https://github.com/kacpertopol/cam_board). 
 
 ## installation
@@ -75,6 +75,39 @@ with a description of all the special keys.
 
 Hitting `w` just displays the camera picure directly:
 ![betterCamera](./doc_images/0002.png)
+
+### zooming into the ARUCO markers
+
+Two keys can be used to achieve this, `r` and `t`:
+![betterCamera](./doc_images/0003.png)
+Small movements of the camera might cause jitter when using `t`.
+Pressing `r` will additionally smooth out the image and introduce a 
+small time delay.
+
+### zooming into the ARUCO markers and inverting colors
+
+Two keys can be used to achieve this, `y` and `u`:
+![betterCamera](./doc_images/0004.png)
+Small movements of the camera might cause jitter when using `u`.
+Pressing `y` will additionally smooth out the image and introduce a 
+small time delay.
+
+### zooming into the ARUCO markers and removing background
+
+This can be useful for saving slide presentations.
+Two keys can be used to achieve this, `d` and `f`:
+![betterCamera](./doc_images/0005.png)
+Small movements of the camera might cause jitter when using `f`.
+Pressing `d` will additionally smooth out the image and introduce a 
+small time delay.
+
+### zooming into the ARUCO markers, removing background, inverting colors
+
+Two keys can be used to achieve this, `i` and `o`:
+![betterCamera](./doc_images/0006.png)
+Small movements of the camera might cause jitter when using `o`.
+Pressing `i` will additionally smooth out the image and introduce a 
+small time delay.
 
 ## configuration
 
