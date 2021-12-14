@@ -2,9 +2,7 @@
 
 Turn web cam into a black / white board:
 
-![betterCamera](./all.gif)
-
-## introduction
+![betterCamera](./doc_images/all.gif)
 
 Improved version of
 [cam_board](https://github.com/kacpertopol/cam_board). 
@@ -52,7 +50,9 @@ is available by pressing `h`. To quit the program hit `q`:
 
 The path to a directory containing the configuration file `betterCam_config` is 
 displayed at the very bottom of the window
-after pressing the `h` key. All configuration is done by modifying this file. 
+after pressing the `h` key:
+![betterCamera](./doc_images/0001_.png)
+All configuration is done by modifying this file. 
 Don't be afraid to tinker with the settings, if you mess up, just replace `betterCam_config`
 with the [default configuration file](./bcam/betterCam_config).
 
