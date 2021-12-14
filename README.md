@@ -11,8 +11,9 @@ This is an improved version of
 
 ### pip
 
-You can install **betterCamera** using [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)).
-Information on the installation and usage of **pip**, on different operating systems, is available [here](https://pip.pypa.io/en/stable/installation/).
+The project uses **python 3**.
+You can install **betterCamera** using [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)). 
+Information on the installation and usage of **pip**, on different operating systems, is available [here](https://pip.pypa.io/en/stable/installation/)
 and [here](https://pip.pypa.io/en/stable/) respectively.
 Many additional resources are available online, see for example [this informative article](https://www.makeuseof.com/tag/install-pip-for-python/).
 
@@ -25,10 +26,9 @@ If you're on *windows* open the command line and run:
 TODO
 ```
 
-
 ### git
 
-If you are familiar with `git` and `python 3` then 
+If you are familiar with **git** and **python 3** then 
 make sure you have the `numpy`, `opencv-python` and `opencv-contrib-python`
 libraries installed before cloning the [repository](https://github.com/kacpertopol/betterCamera).
 The main script is `betterCamera`.
@@ -43,7 +43,6 @@ Control is via keyboard shortcuts. A list of special keys
 is available by pressing `h`. To quit the program hit `q`:
 
 ![keys](./bcam/info.png)
-
 
 ### printing ARUCO markers
 
@@ -115,8 +114,21 @@ When using `d`, `f`, `i` or `o` it might be helpful to adjust
 the de-noising parameter used to remove the background. This
 can be achieved by pressing `+` or `-`.
 
+### switching cameras
+
+This requires information on additional cameras 
+inside the configuration file. See the next section for more information
+no how to do this. 
+
+With the configuration file appropriately edited
+hit `n` to use the next camera. If the camera is not available a still
+image will be displayed. The `n` key can be hit many times and will loop through
+the cameras.
+
 ## configuration
 
+To add additional cameras, change camera resolutions, etc. edit the configuration
+file.
 The path to a directory containing the configuration file `betterCam_config` is 
 displayed at the very bottom of the window
 after pressing the `h` key:
