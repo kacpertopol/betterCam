@@ -36,15 +36,30 @@ The main script is `betterCamera`.
 ## usage
 
 The program can be launched from the  terminal:
-
 ```
 $ betterCamera
 ```
-
 Control is via keyboard shortcuts. A list of special keys
 is available by pressing `h`. To quit the program hit `q`:
 
 ![keys](./bcam/info.png)
+
+
+### printing ARUCO markers
+
+Printouts with the ARUCO markers for a 16x9 camera aspect ration are available 
+(the circle marks the top left corner of the page):
+
+- [PDF](./to_print/a4_16_by_9_tiny_inside.pdf) and [SVG](./to_print/a4_16_by_9_tiny_inside.svg) for A4 paper
+- [PDF](./to_print/letter_16_by_9_tiny_inside.pdf) and [SVG](./to_print/letter_16_by_9_tiny_inside.svg) for LETTER paper
+
+Printouts for other aspect ratios can be prepared using 
+[this](./to_print/symbols/4x4_1000-0.svg), [this](./to_print/symbols/4x4_1000-1.svg),
+[this](./to_print/symbols/4x4_1000-2.svg), and [this](./to_print/symbols/4x4_1000-3.svg)
+SVG image. Just make sure they are appropriately oriented on the page and that the innermost
+rectangle formed by the ARUCO marker corners has the correct aspect ratio.
+
+All ARUCO symbols were generated using [this handy website](https://chev.me/arucogen/).
 
 ### quitting
 
@@ -59,7 +74,7 @@ with a description of all the special keys.
 ### displaying the camera picture directly
 
 Hitting `w` just displays the camera picure directly:
-![betterCamera](./doc_images/0001.png)
+![betterCamera](./doc_images/0002.png)
 
 ## configuration
 
