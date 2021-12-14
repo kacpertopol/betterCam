@@ -293,14 +293,14 @@ def getFrameHelp(frame , aux):
                 (20 , fr.shape[0] - 25) , 
                 fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL ,
                 fontScale = 0.6,
-                color = (125 , 125 , 125),
+                color = (50 , 50 , 50),
                 thickness = 1)
         cv2.putText(fr , 
                 "'" + aux.script_path + "'." , 
                 (20 , fr.shape[0] - 10) , 
                 fontFace=cv2.FONT_HERSHEY_COMPLEX_SMALL ,
                 fontScale = 0.6,
-                color = (125 , 125 , 125),
+                color = (50 , 50 , 50),
                 thickness = 1)
         return (fr , aux)
     else:

@@ -1,6 +1,8 @@
 # betterCam
 
-turn web cam into a black / white board
+Turn web cam into a black / white board:
+
+![betterCamera](./all.gif)
 
 ## introduction
 
