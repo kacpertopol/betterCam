@@ -56,7 +56,7 @@ f_buff = 16
 
 ##########################################################
 #                                                        #
-# OTHER [SECTION TITLES] ARE THE CAMERA NAMES AND        #
+# OTHER SECTION [TITLES] ARE THE CAMERA NAMES AND        #
 # CONTAIN CONFIGURATION SPECIFIC TO A CAMERA             #
 #                                                        #
 # most settings in this part are commented out by        #
