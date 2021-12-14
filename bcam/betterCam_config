@@ -88,12 +88,6 @@ number = 0
 
 aspectratio = 1280x720
 
-#[mywebcam]
-
-#number = 0
-
-#aspectratio = 1920x1080
-
 #[externalcam]
 
 #number = 2
@@ -123,3 +117,10 @@ aspectratio = 1280x720
 # The default value is recommended because it preserves the image aspect ratio.
 
 #crop = False
+
+#[mywebcam]
+
+#number = 0
+
+#aspectratio = 1920x1080
+
