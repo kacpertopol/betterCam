@@ -5,7 +5,7 @@ Turn web cam into a black / white board:
 ![betterCamera](./doc_images/all.gif)
 
 This is an improved version of
-[cam_board](https://github.com/kacpertopol/cam_board). 
+[cam_board](https://github.com/kacpertopol/cam_board).  
 
 ## installation
 
@@ -108,6 +108,12 @@ Two keys can be used to achieve this, `i` and `o`:
 Small movements of the camera might cause jitter when using `o`.
 Pressing `i` will additionally smooth out the image and introduce a 
 small time delay.
+
+### adjusting de-noising parameter
+
+When using `d`, `f`, `i` or `o` it might be helpful to adjust
+the de-noising parameter used to remove the background. This
+can be achieved by pressing `+` or `-`.
 
 ## configuration
 
