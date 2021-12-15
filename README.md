@@ -11,9 +11,9 @@ This is an improved version of
 
 ### pip
 
-The project uses **python 3**.
-You can install **betterCamera** using [pip](https://en.wikipedia.org/wiki/Pip_(package_manager)). 
-Information on the installation and usage of **pip**, on different operating systems, is available [here](https://pip.pypa.io/en/stable/installation/)
+The project uses **python 3** and can be installed using
+[pip](https://en.wikipedia.org/wiki/Pip_(package_manager)). 
+Information on the installation and usage of **pip** on different operating systems is available [here](https://pip.pypa.io/en/stable/installation/)
 and [here](https://pip.pypa.io/en/stable/) respectively.
 Many additional resources are available online, see for example [this informative article](https://www.makeuseof.com/tag/install-pip-for-python/).
 
