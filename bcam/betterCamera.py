@@ -52,6 +52,7 @@ class camData:
             # for undistorting
             self.matrix = None
             self.distortion = None
+            self.border = None
             
             # getting camera
             if(cam == None):
@@ -62,6 +63,8 @@ class camData:
                     self.matrix = numpy.array(list(map(lambda x : float(x) , self.config[cam]["matrix"].split()))).reshape((3 , 3))
                 if("distortion" in self.config[cam]):
                     self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
+                if("border" in self.config[cam]):
+                    self.border = int(self.config[cam]["border"])
 
             self.crop = False
 
@@ -124,6 +127,7 @@ class camData:
         # for undistorting
         self.matrix = None
         self.distortion = None
+        self.border = None
 
         # getting camera
         if(cam == None):
@@ -134,6 +138,8 @@ class camData:
                 self.matrix = numpy.array(list(map(lambda x : float(x) , self.config[cam]["matrix"].split()))).reshape((3 , 3))
             if("distortion" in self.config[cam]):
                 self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
+            if("border" in self.config[cam]):
+                self.border = int(self.config[cam]["border"])
 
         self.crop = False
 
@@ -193,6 +199,72 @@ class camData:
         self.aruco_dict = cv2.aruco.Dictionary_get(cv2.aruco.DICT_4X4_250)
         self.parameters =  cv2.aruco.DetectorParameters_create()
 
+        # csvFile with data
+        self.csvFile = ""
+
+#def getData(warped , aux , size = (28 , 50)):
+#
+#    if(warped is None):
+#        return (warped , aux)
+#
+#    gray = cv2.cvtColor(warped , cv2.COLOR_BGR2GRAY) 
+#    gray = 255 - gray
+#    gray = gray.astype("float32")
+#
+#    gray[0:3 , :] = 0.0
+#    gray[gray.shape[0] - 3 : gray.shape[0] , :] = 0.0
+#    gray[: , 0:3] = 0.0
+#    gray[: , gray.shape[1] - 3 : gray.shape[1]] = 0.0
+#
+#    blured_gray = cv2.filter2D(gray , -1 , aux.blur_kernel)
+#    
+#    stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray)).flatten()))
+#
+#    thr = numpy.where((gray - blured_gray) > aux.l_col * stdv , aux.black , aux.ones)
+#
+#    aux.csvFile = ""
+#
+#    dii = int(warped.shape[0] / size[0])
+#    djj = int(warped.shape[1] / size[1])
+#    for ii in range(size[0]):
+#        for jj in range(size[1]):
+#            segment = numpy.sum(
+#                        thr[
+#                            int(ii * float(warped.shape[0]) / float(size[0])) : int(ii * float(warped.shape[0]) / float(size[0])) + dii , 
+#                            int(jj * float(warped.shape[1]) / float(size[1])) : int(jj * float(warped.shape[1]) / float(size[1])) + djj 
+#                            ]
+#                        )
+#            if(segment < 0.5 * dii * djj):
+#                if(ii >= 1 and jj >= 1 and ii <= size[0] - 2 and jj <= size[1] - 2):
+#                    aux.csvFile += " 1 ; "
+#                warped = cv2.circle(
+#                                        warped , 
+#                                        (
+#                                            int(jj * float(warped.shape[1]) / float(size[1])) + int(0.5 * djj),
+#                                            int(ii * float(warped.shape[0]) / float(size[0])) + int(0.5 * dii)
+#                                        ),
+#                                        2,
+#                                        (255 , 0 , 255),
+#                                        2
+#                                    )
+#            else:
+#                if(ii >= 1 and jj >= 1 and ii <= size[0] - 2 and jj <= size[1] - 2):
+#                    aux.csvFile += " 0 ; "
+#                warped = cv2.circle(
+#                                        warped , 
+#                                        (
+#                                            int(jj * float(warped.shape[1]) / float(size[1])) + int(0.5 * djj),
+#                                            int(ii * float(warped.shape[0]) / float(size[0])) + int(0.5 * dii)
+#                                        ),
+#                                        2,
+#                                        (0 , 0 , 0),
+#                                        2
+#                                    )
+#        if(ii >= 1 and ii <= size[0] - 2):
+#            aux.csvFile += "\n"
+#
+#    return (warped , aux)
+
 def applyDenoise(warped , aux):
 
     if(warped is None):
@@ -220,6 +292,13 @@ def applyDenoise(warped , aux):
 
     warped = cv2.cvtColor(cv2.merge((h_res , l_res , s_res)) , cv2.COLOR_HLS2BGR)
     
+    if(not (aux.border is None)):
+        warped[0:aux.border , : , :] = 255
+        warped[warped.shape[0] - aux.border : warped.shape[0] , : , :] = 255
+        warped[: , 0:aux.border , :] = 255
+        warped[: , warped.shape[1] - aux.border : warped.shape[1] , :] = 255
+
+
     return (warped , aux)
 
 # TODO
@@ -440,6 +519,10 @@ def main(args):
                         if(int(f[:-4]) > maxPng):
                             maxPng = int(f[:-4])
                 cv2.imwrite(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".png") , frame)
+                if(mainAux.csvFile != ""):
+                    with open(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".csv") , "w") as f:
+                        f.write(mainAux.csvFile)
+                    mainAux.csvFile = ""
             elif(key == ord('w')):
                 # operations performed once:
                 mainAux.m_avg = None
@@ -452,6 +535,9 @@ def main(args):
                 mainAux.m_list = []
                 # operations performed in each loop:
                 tools = [getFrameHelp]
+            elif(key == ord('x')):
+                # operations performed in each loop:
+                tools = [getFrameAvg , getMarkers , getData]               
             elif(key == ord('i')):
                 # operations performed in each loop:
                 tools = [getFrameAvg , getMarkers , applyDenoise , invertColors]

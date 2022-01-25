@@ -118,6 +118,12 @@ aspectratio = 1280x720
 
 #crop = False
 
+# ADD BORDER AROUND FRAME
+#
+# If border is set then adds a border pixel wide margin around captured camera frames.
+
+#border = 20
+
 #[mywebcam]
 
 #number = 0

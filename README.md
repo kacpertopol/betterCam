@@ -9,6 +9,7 @@ This is an improved version of
 
 ## installation
 
+<!---
 ### pip
 
 The project uses **python 3** and can be installed using
@@ -25,7 +26,7 @@ If you're on *windows* open the command line and run:
 ```sh
 TODO
 ```
-
+--->
 ### git
 
 If you are familiar with **git** and **python 3** then 
