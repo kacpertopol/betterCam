@@ -309,7 +309,7 @@ def applyDenoise(warped , aux):
 
     h_res = hls[: , : , 0]
     #l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , hls[: , : , 1] , aux.white)
-    l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , 90 * aux.ones , aux.white)
+    l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , 80 * aux.ones , aux.white) # TODO move to configuration file
     s_res = hls[: , : , 2]
     
 
