@@ -6,6 +6,7 @@ import cv2
 import os
 import numpy
 import sys
+import time
 
 class camData:
 
@@ -53,6 +54,9 @@ class camData:
             self.matrix = None
             self.distortion = None
             self.border = None
+
+            # for pause delay
+            self.pauseDelay = None
             
             # getting camera
             if(cam == None):
@@ -65,6 +69,8 @@ class camData:
                     self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
                 if("border" in self.config[cam]):
                     self.border = int(self.config[cam]["border"])
+                if("pauseDelay" in self.config[cam]):
+                    self.pauseDelay = float(self.config[cam]["pauseDelay"])
 
             self.crop = False
 
@@ -81,10 +87,14 @@ class camData:
                 self.res = list(map(lambda x : int(x) , self.config[cam]["aspectratio"].split("x")))
                 self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.res[0])
                 self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.res[1])
+          
+                # list of frames for smoothing
+                self.frame_buff = []
+                self.avg = False  
             
             self.m_avg = None
     
-    def __init__(self , cam = None , sve = None):
+    def __init__(self , cam = None , sve = None , rar = False):
 
         # script directory
         self.script_path = os.path.dirname(os.path.realpath(__file__)) #REGULAR_VERSION#
@@ -95,7 +105,11 @@ class camData:
         # reading configuration file 
         self.config = configparser.ConfigParser()
         self.config.read(os.path.join(self.script_path , "betterCam_config"))
-       
+
+        # warp to the outside of ARUCO markers
+
+        self.rar = rar
+
         self.save_dir = os.getcwd()
         if(not sve is None):
             self.save_dir = sve
@@ -128,6 +142,9 @@ class camData:
         self.matrix = None
         self.distortion = None
         self.border = None
+        
+        # for pause delay
+        self.pauseDelay = None
 
         # getting camera
         if(cam == None):
@@ -140,6 +157,8 @@ class camData:
                 self.distortion = numpy.array(list(map(lambda x : float(x) , self.config[cam]["distortion"].split()))).reshape((1 , 5))
             if("border" in self.config[cam]):
                 self.border = int(self.config[cam]["border"])
+            if("pauseDelay" in self.config[cam]):
+                self.pauseDelay = float(self.config[cam]["pauseDelay"])
 
         self.crop = False
 
@@ -201,6 +220,9 @@ class camData:
 
         # csvFile with data
         self.csvFile = ""
+
+        # current frame
+        self.current_frame = None
 
 #def getData(warped , aux , size = (28 , 50)):
 #
@@ -286,7 +308,8 @@ def applyDenoise(warped , aux):
     stdv = numpy.sqrt(numpy.mean(((gray - blured_gray) * (gray - blured_gray)).flatten()))
 
     h_res = hls[: , : , 0]
-    l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , hls[: , : , 1] , aux.white)
+    #l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , hls[: , : , 1] , aux.white)
+    l_res = numpy.where((gray - blured_gray) > aux.l_col * stdv , 90 * aux.ones , aux.white)
     s_res = hls[: , : , 2]
     
 
@@ -350,6 +373,7 @@ def applyDenoise(warped , aux):
 
 def getFrame(frame , aux):
     fr = aux.get()
+    aux.current_frame = fr
 
     if(fr is None):
         return (frame , aux)
@@ -358,6 +382,7 @@ def getFrame(frame , aux):
 
 def getFrameHelp(frame , aux):
     fr = aux.get()
+    aux.current_frame = fr
 
     if(fr is None):
         return (frame , aux)
@@ -387,6 +412,7 @@ def getFrameHelp(frame , aux):
 
 def getFrameAvg(frame , aux):
     warped = aux.get()
+    aux.current_frame = warped
 
     if(warped is None):
         return (warped , aux)
@@ -420,6 +446,8 @@ def getMarkers(frame , aux):
 
     if(frame is None):
         return (frame , aux)
+
+    #frame = aux.current_frame
     
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     corners, ids, rejectedImgPoints = cv2.aruco.detectMarkers(gray, aux.aruco_dict, parameters=aux.parameters)
@@ -447,7 +475,11 @@ def getMarkers(frame , aux):
     # update matrix
     if(ok):
         aux.pointsglob = pts
-        src = numpy.array([aux.pointsglob[0][2] , aux.pointsglob[1][3] , aux.pointsglob[3][0] , aux.pointsglob[2][1]] , numpy.float32)
+        if(aux.rar):
+            src = numpy.array([aux.pointsglob[0][0] , aux.pointsglob[1][1] , aux.pointsglob[3][2] , aux.pointsglob[2][3]] , numpy.float32)
+        else:
+            src = numpy.array([aux.pointsglob[0][2] , aux.pointsglob[1][3] , aux.pointsglob[3][0] , aux.pointsglob[2][1]] , numpy.float32)
+        #   src = numpy.array([aux.pointsglob[0][2] , aux.pointsglob[1][3] , aux.pointsglob[3][0] , aux.pointsglob[2][1]] , numpy.float32)
         dst = numpy.array([[frame.shape[1] , frame.shape[0]] , [0.0 , frame.shape[0]] , [0.0 , 0.0] , [frame.shape[1] , 0.0]] , numpy.float32)
         m = cv2.getPerspectiveTransform(src , dst)
         aux.m_list.append(m)
@@ -461,7 +493,8 @@ def getMarkers(frame , aux):
     if(aux.m_avg is None):
         return (frame , aux)
     else:
-        warped = cv2.warpPerspective(frame , aux.m_avg , (frame.shape[1] , frame.shape[0]))
+        warped = cv2.warpPerspective(frame , aux.m_avg , (frame.shape[1] , frame.shape[0]) , flags=cv2.INTER_CUBIC)
+        #warped = cv2.warpPerspective(frame , aux.m_avg , (frame.shape[1] , frame.shape[0]))
         return (warped , aux)
 
 def main(args):
@@ -488,18 +521,26 @@ def main(args):
 """)
     parser.add_argument("--camera" , "-c" , help = "Camera to use. Each camera name should be a section in the config file with an associated number and aspectratio.")
     parser.add_argument("--save" , "-s" , help = "Path to directory for saving frames.")
+    parser.add_argument("--raruco" , "-r" , action = "store_true" , help = "Warp outside ARUCO markers.")
     args = parser.parse_args(args) 
    
-    mainAux = camData(cam = args.camera , sve = args.save)
+    mainAux = camData(cam = args.camera , sve = args.save , rar = args.raruco)
     tools = [getFrameHelp]
     storedFrame = None
     frame = None
+    lastPausePress = None
     pauseAll = False
 
     # main loop
 
     try: 
         while(True):
+            if(not mainAux.pauseDelay is None):
+                if(not lastPausePress is None):
+                    if(time.time() - lastPausePress < mainAux.pauseDelay):
+                        pauseAll = False
+                    else:
+                        pauseAll = True
 
             if(not pauseAll):
 
@@ -518,7 +559,10 @@ def main(args):
                     if(f[-4:] == ".png" and f[:-4].isdigit() and len(f) == 8):
                         if(int(f[:-4]) > maxPng):
                             maxPng = int(f[:-4])
-                cv2.imwrite(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".png") , frame)
+                frame_temp = None
+                for t in [getFrame , getMarkers , applyDenoise]:
+                    frame_temp , mainAux = t(frame_temp , mainAux)
+                cv2.imwrite(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".png") , frame_temp)
                 if(mainAux.csvFile != ""):
                     with open(os.path.join(mainAux.save_dir , str(maxPng + 1).zfill(4) + ".csv") , "w") as f:
                         f.write(mainAux.csvFile)
@@ -565,6 +609,7 @@ def main(args):
             elif(key == ord('p')):
                 # operations performed once:
                 pauseAll = not pauseAll
+                lastPausePress = time.time()
             elif(key == ord('9')):
                 # operations performed once:
                 storedFrame = frame
